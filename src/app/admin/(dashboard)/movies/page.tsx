@@ -29,6 +29,8 @@ const statusLabel: Record<MovieStatus, string> = {
   ARCHIVED: "Archived",
 }
 
+export const dynamic = "force-dynamic"
+
 export default async function AdminMoviesPage() {
   const movies = await listMoviesForAdmin()
 

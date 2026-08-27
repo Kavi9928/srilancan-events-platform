@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { listMoviesForAdmin } from "@/lib/admin-movies"
 
+export const dynamic = "force-dynamic"
+
 export default async function AdminDashboardPage() {
   const movies = await listMoviesForAdmin()
   const counts = {
