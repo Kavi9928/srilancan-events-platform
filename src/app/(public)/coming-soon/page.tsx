@@ -3,6 +3,8 @@ import type { Metadata } from "next"
 import { MovieGrid } from "@/components/site/movie-grid"
 import { getComingSoonMovies } from "@/lib/movies"
 
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
   title: "Coming Soon",
   description: "Movies coming soon.",

@@ -3,6 +3,8 @@ import type { Metadata } from "next"
 import { MovieGrid } from "@/components/site/movie-grid"
 import { getNowShowingMovies } from "@/lib/movies"
 
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
   title: "Now Showing",
   description: "Movies currently playing.",
