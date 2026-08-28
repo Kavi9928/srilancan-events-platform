@@ -32,7 +32,12 @@ const statusLabel: Record<MovieStatus, string> = {
 export const dynamic = "force-dynamic"
 
 export default async function AdminMoviesPage() {
-  const movies = await listMoviesForAdmin()
+  let movies = []
+  try {
+    movies = await listMoviesForAdmin()
+  } catch {
+    // Database unavailable - show empty state
+  }
 
   return (
     <div className="space-y-6">

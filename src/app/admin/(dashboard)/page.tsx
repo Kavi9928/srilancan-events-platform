@@ -6,7 +6,13 @@ import { listMoviesForAdmin } from "@/lib/admin-movies"
 export const dynamic = "force-dynamic"
 
 export default async function AdminDashboardPage() {
-  const movies = await listMoviesForAdmin()
+  let movies = []
+  try {
+    movies = await listMoviesForAdmin()
+  } catch {
+    // Database unavailable - show empty state
+  }
+
   const counts = {
     nowShowing: movies.filter((m) => m.status === "NOW_SHOWING").length,
     comingSoon: movies.filter((m) => m.status === "COMING_SOON").length,
