@@ -1,22 +1,14 @@
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { listMoviesForAdmin } from "@/lib/admin-movies"
 
 export const dynamic = "force-dynamic"
 
 export default async function AdminDashboardPage() {
-  let movies = []
-  try {
-    movies = await listMoviesForAdmin()
-  } catch {
-    // Database unavailable - show empty state
-  }
-
   const counts = {
-    nowShowing: movies.filter((m) => m.status === "NOW_SHOWING").length,
-    comingSoon: movies.filter((m) => m.status === "COMING_SOON").length,
-    archived: movies.filter((m) => m.status === "ARCHIVED").length,
+    nowShowing: 0,
+    comingSoon: 0,
+    archived: 0,
   }
 
   return (
