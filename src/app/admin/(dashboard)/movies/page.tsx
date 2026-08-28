@@ -21,7 +21,7 @@ import {
 import { formatReleaseDate } from "@/lib/format"
 import { listMoviesForAdmin } from "@/lib/admin-movies"
 import { deleteMovieAction, setMovieStatusAction } from "@/app/admin/movies/actions"
-import type { MovieStatus } from "@/lib/types"
+import type { Movie, MovieStatus } from "@/lib/types"
 
 const statusLabel: Record<MovieStatus, string> = {
   NOW_SHOWING: "Now Showing",
@@ -32,12 +32,7 @@ const statusLabel: Record<MovieStatus, string> = {
 export const dynamic = "force-dynamic"
 
 export default async function AdminMoviesPage() {
-  let movies = []
-  try {
-    movies = await listMoviesForAdmin()
-  } catch {
-    // Database unavailable - show empty state
-  }
+  const movies: Movie[] = []
 
   return (
     <div className="space-y-6">
