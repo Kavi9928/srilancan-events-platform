@@ -4,17 +4,19 @@ import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 
 import { requireAdminSession } from "@/lib/auth/session-cookie"
-import { uploadMovieImage } from "@/lib/cloudinary"
+import { uploadImage } from "@/lib/cloudinary"
 import {
   createMovieRecord,
   deleteMovieRecord,
   updateMovieRecord,
-  setMovieStatus,
+  archiveMovieRecord,
+  restoreMovieRecord,
   addScreeningRecord,
   removeScreeningRecord,
 } from "@/lib/admin-movies"
 import { movieFormSchema, screeningFormSchema } from "@/lib/validation/movie"
-import type { MovieStatus } from "@/lib/types"
+import { deriveShowingStatus } from "@/lib/movie-status"
+import { Prisma } from "@/generated/prisma/client"
 
 export type MovieActionState = {
   error?: string
@@ -30,6 +32,10 @@ function emptyToNull(value: string | undefined): string | null {
   return value ? value : null
 }
 
+function isSlugConflict(error: unknown): boolean {
+  return error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002"
+}
+
 async function uploadIfProvided(
   formData: FormData,
   fieldName: string,
@@ -37,7 +43,7 @@ async function uploadIfProvided(
 ): Promise<string | null> {
   const file = formData.get(fieldName)
   if (file instanceof File && file.size > 0) {
-    const { secureUrl } = await uploadMovieImage(file, folder)
+    const { secureUrl } = await uploadImage(file, folder)
     return secureUrl
   }
   return null
@@ -63,16 +69,26 @@ export async function createMovieAction(
     return { error: "A poster and banner image are both required." }
   }
 
-  const { ticketUrl, trailerUrl, rating, ...rest } = parsed.data
+  const { ticketUrl, trailerUrl, rating, locationId, isFeatured, archived, ...rest } = parsed.data
 
-  await createMovieRecord({
-    ...rest,
-    ticketUrl: emptyToNull(ticketUrl),
-    trailerUrl: emptyToNull(trailerUrl),
-    rating: rating === "" || rating === undefined ? null : rating,
-    posterUrl,
-    bannerUrl,
-  })
+  try {
+    await createMovieRecord({
+      ...rest,
+      ticketUrl: emptyToNull(ticketUrl),
+      trailerUrl: emptyToNull(trailerUrl),
+      rating: rating === "" || rating === undefined ? null : rating,
+      locationId: emptyToNull(locationId),
+      isFeatured: isFeatured === "on",
+      status: archived === "on" ? "ARCHIVED" : deriveShowingStatus(rest.releaseDate),
+      posterUrl,
+      bannerUrl,
+    })
+  } catch (error) {
+    if (isSlugConflict(error)) {
+      return { fieldErrors: { slug: ["This slug is already in use. Choose a different one."] } }
+    }
+    throw error
+  }
 
   revalidateSite()
   redirect("/admin/movies")
@@ -98,16 +114,26 @@ export async function updateMovieAction(
   const currentPosterUrl = String(formData.get("currentPosterUrl") ?? "")
   const currentBannerUrl = String(formData.get("currentBannerUrl") ?? "")
 
-  const { ticketUrl, trailerUrl, rating, ...rest } = parsed.data
+  const { ticketUrl, trailerUrl, rating, locationId, isFeatured, archived, ...rest } = parsed.data
 
-  await updateMovieRecord(id, {
-    ...rest,
-    ticketUrl: emptyToNull(ticketUrl),
-    trailerUrl: emptyToNull(trailerUrl),
-    rating: rating === "" || rating === undefined ? null : rating,
-    posterUrl: uploadedPosterUrl ?? currentPosterUrl,
-    bannerUrl: uploadedBannerUrl ?? currentBannerUrl,
-  })
+  try {
+    await updateMovieRecord(id, {
+      ...rest,
+      ticketUrl: emptyToNull(ticketUrl),
+      trailerUrl: emptyToNull(trailerUrl),
+      rating: rating === "" || rating === undefined ? null : rating,
+      locationId: emptyToNull(locationId),
+      isFeatured: isFeatured === "on",
+      status: archived === "on" ? "ARCHIVED" : deriveShowingStatus(rest.releaseDate),
+      posterUrl: uploadedPosterUrl ?? currentPosterUrl,
+      bannerUrl: uploadedBannerUrl ?? currentBannerUrl,
+    })
+  } catch (error) {
+    if (isSlugConflict(error)) {
+      return { fieldErrors: { slug: ["This slug is already in use. Choose a different one."] } }
+    }
+    throw error
+  }
 
   revalidateSite()
   redirect("/admin/movies")
@@ -119,9 +145,15 @@ export async function deleteMovieAction(id: string): Promise<void> {
   revalidateSite()
 }
 
-export async function setMovieStatusAction(id: string, status: MovieStatus): Promise<void> {
+export async function archiveMovieAction(id: string): Promise<void> {
   await requireAdminSession()
-  await setMovieStatus(id, status)
+  await archiveMovieRecord(id)
+  revalidateSite()
+}
+
+export async function restoreMovieAction(id: string): Promise<void> {
+  await requireAdminSession()
+  await restoreMovieRecord(id)
   revalidateSite()
 }
 

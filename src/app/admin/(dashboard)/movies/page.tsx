@@ -20,8 +20,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { formatReleaseDate } from "@/lib/format"
 import { listMoviesForAdmin } from "@/lib/admin-movies"
-import { deleteMovieAction, setMovieStatusAction } from "@/app/admin/movies/actions"
-import type { Movie, MovieStatus } from "@/lib/types"
+import { listLocations } from "@/lib/locations"
+import { deleteMovieAction, archiveMovieAction, restoreMovieAction } from "@/app/admin/movies/actions"
+import { computeEffectiveStatus } from "@/lib/movie-status"
+import type { MovieStatus } from "@/lib/types"
 
 const statusLabel: Record<MovieStatus, string> = {
   NOW_SHOWING: "Now Showing",
@@ -32,7 +34,8 @@ const statusLabel: Record<MovieStatus, string> = {
 export const dynamic = "force-dynamic"
 
 export default async function AdminMoviesPage() {
-  const movies: Movie[] = []
+  const [movies, locations] = await Promise.all([listMoviesForAdmin(), listLocations()])
+  const locationById = new Map(locations.map((location) => [location.id, location]))
 
   return (
     <div className="space-y-6">
@@ -47,6 +50,7 @@ export default async function AdminMoviesPage() {
           <TableRow>
             <TableHead>Title</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead>Location</TableHead>
             <TableHead>Release Date</TableHead>
             <TableHead className="w-10" />
           </TableRow>
@@ -54,9 +58,23 @@ export default async function AdminMoviesPage() {
         <TableBody>
           {movies.map((movie) => (
             <TableRow key={movie.id}>
-              <TableCell className="font-medium">{movie.title}</TableCell>
+              <TableCell className="font-medium">
+                <div className="flex items-center gap-2">
+                  {movie.title}
+                  {movie.isFeatured ? <Badge>Featured</Badge> : null}
+                </div>
+              </TableCell>
               <TableCell>
-                <Badge variant="secondary">{statusLabel[movie.status]}</Badge>
+                <Badge variant="secondary">
+                  {statusLabel[computeEffectiveStatus(movie.status, movie.releaseDate)]}
+                </Badge>
+              </TableCell>
+              <TableCell>
+                {movie.locationId
+                  ? (locationById.get(movie.locationId)?.icon ?? "") +
+                    " " +
+                    (locationById.get(movie.locationId)?.name ?? "Unknown")
+                  : "—"}
               </TableCell>
               <TableCell>{formatReleaseDate(movie.releaseDate)}</TableCell>
               <TableCell>
@@ -73,16 +91,15 @@ export default async function AdminMoviesPage() {
                       Edit
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    {(Object.keys(statusLabel) as MovieStatus[])
-                      .filter((status) => status !== movie.status)
-                      .map((status) => (
-                        <DropdownMenuItem
-                          key={status}
-                          onClick={setMovieStatusAction.bind(null, movie.id, status)}
-                        >
-                          Mark as {statusLabel[status]}
-                        </DropdownMenuItem>
-                      ))}
+                    {movie.status === "ARCHIVED" ? (
+                      <DropdownMenuItem onClick={restoreMovieAction.bind(null, movie.id)}>
+                        Restore (un-archive)
+                      </DropdownMenuItem>
+                    ) : (
+                      <DropdownMenuItem onClick={archiveMovieAction.bind(null, movie.id)}>
+                        Archive
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       variant="destructive"

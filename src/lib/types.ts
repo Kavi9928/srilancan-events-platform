@@ -14,6 +14,32 @@ export type Movie = {
   status: MovieStatus
   ticketUrl: string | null
   rating: number | null
+  locationId: string | null
+  isFeatured: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export type Location = {
+  id: string
+  name: string
+  icon: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type BlogPost = {
+  id: string
+  title: string
+  slug: string
+  excerpt: string
+  content: string
+  category: string
+  author: string
+  imageUrl: string
+  publishedAt: string
+  isFeatured: boolean
+  isPublished: boolean
   createdAt: string
   updatedAt: string
 }

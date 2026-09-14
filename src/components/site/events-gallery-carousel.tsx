@@ -5,50 +5,24 @@ import Image from "next/image"
 import { SparklesIcon, ArrowRightIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import type { Movie } from "@/lib/types"
 
-const GALLERY_ITEMS = [
-  {
-    id: 1,
-    title: "Live Cinema",
-    image: "https://picsum.photos/seed/event-1/600/800",
-    description: "Experience the magic of cinema with exclusive screenings and live performances.",
-  },
-  {
-    id: 2,
-    title: "Cultural Events",
-    image: "https://picsum.photos/seed/event-2/600/800",
-    description: "Celebrate Sri Lankan heritage with traditional music, dance, and performances.",
-  },
-  {
-    id: 3,
-    title: "Live Concerts",
-    image: "https://picsum.photos/seed/event-3/600/800",
-    description: "World-class musicians performing classical and contemporary music.",
-  },
-]
-
-export function EventsGalleryCarousel() {
+export function EventsGalleryCarousel({ movies }: { movies: Movie[] }) {
   const [current, setCurrent] = useState(0)
-  const [isAutoPlay, setIsAutoPlay] = useState(true)
-  const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
-    setIsLoaded(true)
-  }, [])
-
-  useEffect(() => {
-    if (!isAutoPlay) return
+    if (movies.length <= 1) return
 
     const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % GALLERY_ITEMS.length)
+      setCurrent((prev) => (prev + 1) % movies.length)
     }, 5000)
 
     return () => clearInterval(interval)
-  }, [isAutoPlay])
+  }, [movies.length])
 
 
   return (
-    <section className="w-screen relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] bg-gradient-to-br from-black via-gray-950 to-gray-900 h-screen flex items-center px-4 sm:px-8 lg:px-16 py-16 overflow-hidden">
+    <section className="w-screen relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] bg-gradient-to-br from-black via-gray-950 to-gray-900 min-h-screen flex flex-col lg:flex-row items-center gap-12 lg:gap-0 px-4 sm:px-8 lg:px-16 py-16 overflow-hidden">
       {/* Animated background glow effects */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-1/3 right-1/3 w-96 h-96 bg-red-600 rounded-full filter blur-3xl animate-pulse" />
@@ -56,7 +30,7 @@ export function EventsGalleryCarousel() {
       </div>
 
       {/* Left Content Section */}
-      <div className={`flex-1 max-w-2xl z-10 transition-all duration-1000 transform ${isLoaded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
+      <div className="flex-1 w-full max-w-2xl z-10 transition-all duration-1000 transform opacity-100 translate-x-0">
         {/* Premium badge */}
         <div className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-red-500/20 to-orange-500/20 border border-red-500/50 backdrop-blur-md mb-8 hover:border-red-400 transition-all duration-300 hover:shadow-lg hover:shadow-red-500/20">
           <SparklesIcon className="w-4 h-4 text-red-400 animate-pulse" />
@@ -123,11 +97,16 @@ export function EventsGalleryCarousel() {
       </div>
 
       {/* Right Carousel Section - 3 Cards (Front, Left, Right) */}
-      <div className={`flex-1 flex justify-end items-center z-10 transition-all duration-1000 transform ${isLoaded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
-        <div className="relative w-full h-screen flex items-center justify-center" style={{ perspective: "1200px" }}>
+      <div className="flex-1 w-full flex justify-center lg:justify-end items-center z-10 transition-all duration-1000 transform opacity-100 translate-x-0">
+        <div className="relative w-full h-72 sm:h-80 lg:h-screen flex items-center justify-center" style={{ perspective: "1200px" }}>
           <div className="relative w-full h-80 flex justify-center items-center">
-            {GALLERY_ITEMS.map((item, index) => {
-              const diff = (index - current + GALLERY_ITEMS.length) % GALLERY_ITEMS.length
+            {movies.length === 0 && (
+              <p className="text-white/60 text-sm">
+                No featured events yet — mark a movie as featured in the admin panel.
+              </p>
+            )}
+            {movies.map((movie, index) => {
+              const diff = (index - current + movies.length) % movies.length
 
               let rotateY = 0
               let translateX = 0
@@ -153,7 +132,7 @@ export function EventsGalleryCarousel() {
                 scale = 0.8
                 opacity = 0.95
                 zIndex = 30
-              } else if (diff === GALLERY_ITEMS.length - 1) {
+              } else if (diff === movies.length - 1) {
                 // Left
                 rotateY = 35
                 translateX = -160
@@ -165,7 +144,7 @@ export function EventsGalleryCarousel() {
 
               return (
                 <div
-                  key={item.id}
+                  key={movie.id}
                   className="absolute w-72 h-96 rounded-2xl overflow-hidden transition-all duration-500 cursor-pointer group"
                   style={{
                     transform: `rotateY(${rotateY}deg) translateX(${translateX}px) translateZ(${translateZ}px) scale(${scale})`,
@@ -180,8 +159,8 @@ export function EventsGalleryCarousel() {
                   )}
 
                   <Image
-                    src={item.image}
-                    alt={item.title}
+                    src={movie.posterUrl}
+                    alt={movie.title}
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
                     priority={diff === 0}
@@ -194,20 +173,25 @@ export function EventsGalleryCarousel() {
                   {diff === 0 && (
                     <div className="absolute inset-0 flex flex-col justify-between p-6 text-white">
                       <span className="text-amber-400 text-xs font-semibold px-3 py-1 bg-amber-600/30 rounded-full w-fit">Featured</span>
-                      <div>
-                        <h3 className="text-2xl font-bold mb-2">{item.title}</h3>
-                        <p className="text-gray-200 text-xs leading-relaxed">{item.description}</p>
+                      <div className="space-y-3">
+                        <div>
+                          <h3 className="text-2xl font-bold mb-2">{movie.title}</h3>
+                          <p className="text-gray-200 text-xs leading-relaxed line-clamp-3">{movie.description}</p>
+                        </div>
+                        <Link
+                          href={movie.ticketUrl ?? `/movies/${movie.slug}`}
+                          className="w-fit px-5 py-2 bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-700 hover:to-orange-600 rounded-full text-xs font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-red-500/50"
+                        >
+                          Book Now
+                        </Link>
                       </div>
-                      <button className="w-fit px-5 py-2 bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-700 hover:to-orange-600 rounded-full text-xs font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-red-500/50">
-                        Book Now
-                      </button>
                     </div>
                   )}
 
                   {/* Title on side cards */}
                   {diff !== 0 && (
                     <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                      <p className="text-sm font-semibold text-center group-hover:text-red-400 transition-colors">{item.title}</p>
+                      <p className="text-sm font-semibold text-center group-hover:text-red-400 transition-colors">{movie.title}</p>
                     </div>
                   )}
                 </div>

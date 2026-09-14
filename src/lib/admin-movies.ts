@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import type { Movie, MovieStatus, Screening } from "@/lib/types"
+import { deriveShowingStatus } from "@/lib/movie-status"
 
 type MovieInput = {
   title: string
@@ -14,6 +15,8 @@ type MovieInput = {
   rating: number | null
   posterUrl: string
   bannerUrl: string
+  locationId: string | null
+  isFeatured: boolean
 }
 
 type ScreeningInput = {
@@ -36,6 +39,8 @@ function serializeMovie(movie: {
   status: MovieStatus
   ticketUrl: string | null
   rating: number | null
+  locationId: string | null
+  isFeatured: boolean
   createdAt: Date
   updatedAt: Date
 }): Movie {
@@ -100,8 +105,17 @@ export async function deleteMovieRecord(id: string): Promise<void> {
   await prisma.movie.delete({ where: { id } })
 }
 
-export async function setMovieStatus(id: string, status: MovieStatus): Promise<Movie> {
-  const movie = await prisma.movie.update({ where: { id }, data: { status } })
+export async function archiveMovieRecord(id: string): Promise<Movie> {
+  const movie = await prisma.movie.update({ where: { id }, data: { status: "ARCHIVED" } })
+  return serializeMovie(movie)
+}
+
+export async function restoreMovieRecord(id: string): Promise<Movie> {
+  const existing = await prisma.movie.findUniqueOrThrow({ where: { id } })
+  const movie = await prisma.movie.update({
+    where: { id },
+    data: { status: deriveShowingStatus(existing.releaseDate) },
+  })
   return serializeMovie(movie)
 }
 

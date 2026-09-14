@@ -1,14 +1,20 @@
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { listMoviesForAdmin } from "@/lib/admin-movies"
+import { computeEffectiveStatus } from "@/lib/movie-status"
 
 export const dynamic = "force-dynamic"
 
 export default async function AdminDashboardPage() {
+  const movies = await listMoviesForAdmin()
+  const effectiveStatuses = movies.map((movie) =>
+    computeEffectiveStatus(movie.status, movie.releaseDate)
+  )
   const counts = {
-    nowShowing: 0,
-    comingSoon: 0,
-    archived: 0,
+    nowShowing: effectiveStatuses.filter((status) => status === "NOW_SHOWING").length,
+    comingSoon: effectiveStatuses.filter((status) => status === "COMING_SOON").length,
+    archived: effectiveStatuses.filter((status) => status === "ARCHIVED").length,
   }
 
   return (

@@ -1,7 +1,8 @@
 import type { Metadata } from "next"
 
-import { MovieGrid } from "@/components/site/movie-grid"
+import { LocationFilterBar } from "@/components/site/location-filter-bar"
 import { getComingSoonMovies } from "@/lib/movies"
+import { listLocations } from "@/lib/locations"
 
 export const dynamic = "force-dynamic"
 
@@ -11,14 +12,16 @@ export const metadata: Metadata = {
 }
 
 export default async function ComingSoonPage() {
-  const movies = await getComingSoonMovies()
+  const [movies, locations] = await Promise.all([getComingSoonMovies(), listLocations()])
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-12 sm:px-6">
       <h1 className="text-2xl font-semibold tracking-tight">Coming Soon</h1>
-      <MovieGrid
+      <LocationFilterBar
         movies={movies}
+        locations={locations}
         emptyMessage="No upcoming movies announced yet."
+        emptyMessageForLocation="No upcoming movies announced for {location} yet."
       />
     </div>
   )

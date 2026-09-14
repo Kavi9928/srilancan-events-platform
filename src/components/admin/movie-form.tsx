@@ -19,22 +19,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import type { Movie } from "@/lib/types"
+import type { Movie, Location } from "@/lib/types"
 import type { MovieActionState } from "@/app/admin/movies/actions"
-
-const statusOptions = [
-  { value: "NOW_SHOWING", label: "Now Showing" },
-  { value: "COMING_SOON", label: "Coming Soon" },
-  { value: "ARCHIVED", label: "Archived" },
-]
 
 const initialState: MovieActionState = {}
 
 export function MovieForm({
   movie,
+  locations,
   action,
 }: {
   movie?: Movie
+  locations: Location[]
   action: (prevState: MovieActionState, formData: FormData) => Promise<MovieActionState>
 }) {
   const [state, formAction, isPending] = useActionState(action, initialState)
@@ -142,25 +138,55 @@ export function MovieForm({
         </Field>
 
         <Field>
-          <FieldLabel htmlFor="status">Status</FieldLabel>
+          <FieldLabel htmlFor="locationId">Location</FieldLabel>
           <FieldContent>
-            <Select name="status" defaultValue={movie?.status ?? "COMING_SOON"}>
-              <SelectTrigger id="status" className="w-full">
+            <Select name="locationId" defaultValue={movie?.locationId ?? ""}>
+              <SelectTrigger id="locationId" className="w-full">
                 <SelectValue>
                   {(value: string) =>
-                    statusOptions.find((option) => option.value === value)?.label
+                    value
+                      ? locations.find((location) => location.id === value)?.name
+                      : "No location"
                   }
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {statusOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                <SelectItem value="">No location</SelectItem>
+                {locations.map((location) => (
+                  <SelectItem key={location.id} value={location.id}>
+                    {location.icon} {location.name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </FieldContent>
+        </Field>
+
+        <Field orientation="horizontal">
+          <input
+            id="isFeatured"
+            name="isFeatured"
+            type="checkbox"
+            defaultChecked={movie?.isFeatured}
+            className="size-4 rounded border-input"
+          />
+          <FieldLabel htmlFor="isFeatured" className="font-normal">
+            Feature in Hero section
+          </FieldLabel>
+        </Field>
+
+        <Field orientation="horizontal">
+          <input
+            id="archived"
+            name="archived"
+            type="checkbox"
+            defaultChecked={movie?.status === "ARCHIVED"}
+            className="size-4 rounded border-input"
+          />
+          <FieldLabel htmlFor="archived" className="font-normal">
+            Archived (hidden from the site — otherwise Now Showing / Coming Soon is set
+            automatically from the release date)
+          </FieldLabel>
         </Field>
 
         <Field>

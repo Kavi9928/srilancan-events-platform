@@ -34,11 +34,49 @@ model Movie {
   status          MovieStatus @default(COMING_SOON)
   ticketUrl       String?
   rating          Float?
+  locationId      String?     @db.ObjectId
+  location        Location?   @relation(fields: [locationId], references: [id])
+  isFeatured      Boolean     @default(false)
   screenings      Screening[]
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 
   @@index([status])
+  @@index([locationId])
+  @@index([isFeatured])
+}
+
+model Location {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  icon      String   @default("📍")
+  movies    Movie[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BlogPost {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  slug        String   @unique
+  excerpt     String
+  content     String
+  category    String
+  author      String
+  imageUrl    String
+  publishedAt DateTime @default(now())
+  isFeatured  Boolean  @default(false)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isPublished])
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  createdAt DateTime @default(now())
 }
 
 model Screening {

@@ -25,15 +25,24 @@ function serializeScreening(screening: PrismaScreening): Screening {
 
 export async function getNowShowingMovies(): Promise<Movie[]> {
   const movies = await prisma.movie.findMany({
-    where: { status: "NOW_SHOWING" },
+    where: { status: { not: "ARCHIVED" }, releaseDate: { lte: new Date() } },
     orderBy: { releaseDate: "desc" },
+  })
+  return movies.map(serializeMovie)
+}
+
+export async function getFeaturedMovies(limit = 3): Promise<Movie[]> {
+  const movies = await prisma.movie.findMany({
+    where: { isFeatured: true, status: { not: "ARCHIVED" } },
+    orderBy: { updatedAt: "desc" },
+    take: limit,
   })
   return movies.map(serializeMovie)
 }
 
 export async function getComingSoonMovies(): Promise<Movie[]> {
   const movies = await prisma.movie.findMany({
-    where: { status: "COMING_SOON" },
+    where: { status: { not: "ARCHIVED" }, releaseDate: { gt: new Date() } },
     orderBy: { releaseDate: "asc" },
   })
   return movies.map(serializeMovie)
@@ -59,9 +68,19 @@ export async function searchMovies(params: {
 }): Promise<Movie[]> {
   const { query, genre, status } = params
 
+  const now = new Date()
+  const statusFilter =
+    status === "NOW_SHOWING"
+      ? { status: { not: "ARCHIVED" as const }, releaseDate: { lte: now } }
+      : status === "COMING_SOON"
+        ? { status: { not: "ARCHIVED" as const }, releaseDate: { gt: now } }
+        : status === "ARCHIVED"
+          ? { status: "ARCHIVED" as const }
+          : { status: { not: "ARCHIVED" as const } }
+
   const movies = await prisma.movie.findMany({
     where: {
-      status: status ?? { not: "ARCHIVED" },
+      ...statusFilter,
       ...(genre ? { genres: { has: genre } } : {}),
       ...(query
         ? {
@@ -96,6 +115,15 @@ export async function getRelatedMovies(
   })
 
   return movies.map(serializeMovie)
+}
+
+export async function getDistinctGenres(): Promise<string[]> {
+  const movies = await prisma.movie.findMany({
+    where: { status: { not: "ARCHIVED" } },
+    select: { genres: true },
+  })
+  const genres = new Set(movies.flatMap((movie) => movie.genres))
+  return [...genres].sort()
 }
 
 export async function getMovieScreenings(movieId: string): Promise<Screening[]> {

@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Lets the dev server serve HMR/devtools assets when opened via the LAN IP
+  // (e.g. testing from a phone on the same network), not just localhost.
+  allowedDevOrigins: ["192.168.8.187", "192.168.1.20"],
   images: {
     remotePatterns: [
       {

@@ -12,3 +12,10 @@ export function formatReleaseDate(isoDate: string): string {
     timeZone: "UTC",
   })
 }
+
+/** ~200 words/min reading speed; not stored, always derived from the current content. */
+export function estimateReadTime(content: string): string {
+  const words = content.trim().split(/\s+/).filter(Boolean).length
+  const minutes = Math.max(1, Math.round(words / 200))
+  return `${minutes} min read`
+}

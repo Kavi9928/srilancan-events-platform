@@ -1,68 +1,23 @@
 "use client"
 
 import Image from "next/image"
+import Link from "next/link"
 import { Heart, Share2, Calendar, User } from "lucide-react"
 import { useState } from "react"
 
-const BLOG_POSTS = [
-  {
-    id: 1,
-    title: "The Ultimate Guide to Finding the Best Events in Sri Lanka",
-    excerpt: "Discover the most exciting events happening across the island. From cultural festivals to music concerts, live performances to sports tournaments, explore what's trending and book your tickets early.",
-    category: "Events Guide",
-    date: "Mar 15, 2024",
-    author: "Sarah Chen",
-    image: "https://picsum.photos/seed/blog-featured/800/600",
-    readTime: "8 min read",
-  },
-  {
-    id: 2,
-    title: "5 Must-Attend Music Festivals This Year",
-    excerpt: "Explore the most anticipated music festivals happening this year. From indie rock to classical performances, find your next unforgettable musical experience and book early for the best rates.",
-    category: "Music",
-    date: "Mar 10, 2024",
-    author: "James Wilson",
-    image: "https://picsum.photos/seed/blog-music/800/600",
-    readTime: "6 min read",
-  },
-  {
-    id: 3,
-    title: "Cinema Trends: What's Hot in 2024",
-    excerpt: "Dive into the latest trends shaping the film industry. From groundbreaking cinematography to innovative storytelling, discover what filmmakers and audiences are excited about.",
-    category: "Movies",
-    date: "Mar 8, 2024",
-    author: "Emma Davis",
-    image: "https://picsum.photos/seed/blog-cinema/800/600",
-    readTime: "7 min read",
-  },
-  {
-    id: 4,
-    title: "Cultural Events: Celebrating Sri Lankan Heritage",
-    excerpt: "Experience the richness of Sri Lankan culture through traditional festivals and celebrations. Learn about the stories, significance, and best places to witness these magnificent events.",
-    category: "Culture",
-    date: "Mar 5, 2024",
-    author: "Priya Sharma",
-    image: "https://picsum.photos/seed/blog-culture/800/600",
-    readTime: "9 min read",
-  },
-  {
-    id: 5,
-    title: "Behind the Scenes: Event Planning Tips",
-    excerpt: "Get insider tips from professional event planners. Learn how to organize unforgettable events, manage budgets, and create memorable experiences for your guests.",
-    category: "Tips",
-    date: "Mar 1, 2024",
-    author: "Michael Brown",
-    image: "https://picsum.photos/seed/blog-planning/800/600",
-    readTime: "5 min read",
-  },
-]
+import { formatReleaseDate, estimateReadTime } from "@/lib/format"
+import type { BlogPost } from "@/lib/types"
 
-export function BlogSection() {
+export function BlogSection({ posts }: { posts: BlogPost[] }) {
   const [liked, setLiked] = useState(false)
-  const [featuredId, setFeaturedId] = useState(1)
+  const [featuredId, setFeaturedId] = useState(posts[0]?.id)
 
-  const featured = BLOG_POSTS.find((post) => post.id === featuredId)
-  const others = BLOG_POSTS.filter((post) => post.id !== featuredId)
+  if (posts.length === 0) {
+    return null
+  }
+
+  const featured = posts.find((post) => post.id === featuredId) ?? posts[0]
+  const others = posts.filter((post) => post.id !== featured.id)
 
   return (
     <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
@@ -91,7 +46,7 @@ export function BlogSection() {
               {/* Image Container */}
               <div className="relative h-80 overflow-hidden">
                 <Image
-                  src={featured.image}
+                  src={featured.imageUrl}
                   alt={featured.title}
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -132,21 +87,24 @@ export function BlogSection() {
                 <div className="flex flex-wrap items-center gap-6 pt-6 border-t border-white/10">
                   <div className="flex items-center gap-2 text-white/60 text-sm">
                     <Calendar className="w-4 h-4 text-red-400" />
-                    {featured.date}
+                    {formatReleaseDate(featured.publishedAt)}
                   </div>
                   <div className="flex items-center gap-2 text-white/60 text-sm">
                     <User className="w-4 h-4 text-orange-400" />
                     {featured.author}
                   </div>
                   <div className="text-sm text-red-400 font-medium">
-                    {featured.readTime}
+                    {estimateReadTime(featured.content)}
                   </div>
                 </div>
 
                 {/* Read More Button */}
-                <button className="mt-6 px-6 py-3 rounded-full bg-gradient-to-r from-red-600 to-orange-500 text-white font-semibold hover:shadow-lg hover:shadow-red-500/50 hover:scale-105 transition-all duration-300">
+                <Link
+                  href={`/blog/${featured.slug}`}
+                  className="mt-6 inline-block px-6 py-3 rounded-full bg-gradient-to-r from-red-600 to-orange-500 text-white font-semibold hover:shadow-lg hover:shadow-red-500/50 hover:scale-105 transition-all duration-300"
+                >
                   Read Full Article
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -171,7 +129,7 @@ export function BlogSection() {
                   {/* Thumbnail */}
                   <div className="relative w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden">
                     <Image
-                      src={post.image}
+                      src={post.imageUrl}
                       alt={post.title}
                       fill
                       className="object-cover group-hover:scale-110 transition-transform duration-300"
@@ -191,7 +149,7 @@ export function BlogSection() {
                     </div>
                     <div className="flex items-center gap-2 text-xs text-white/50">
                       <Calendar className="w-3 h-3" />
-                      {post.date}
+                      {formatReleaseDate(post.publishedAt)}
                     </div>
                   </div>
                 </div>
@@ -203,11 +161,14 @@ export function BlogSection() {
 
       {/* View All Button */}
       <div className="mt-16 text-center">
-        <button className="group relative px-8 py-4 rounded-full font-semibold text-lg text-white overflow-hidden transition-all duration-300">
+        <Link
+          href="/blog"
+          className="group relative inline-block px-8 py-4 rounded-full font-semibold text-lg text-white overflow-hidden transition-all duration-300"
+        >
           <div className="absolute inset-0 bg-gradient-to-r from-red-600/40 via-orange-500/40 to-rose-600/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-full" />
           <div className="absolute inset-0 border border-white/20 rounded-full group-hover:border-red-500/50 transition-colors" />
           <span className="relative">View All Articles</span>
-        </button>
+        </Link>
       </div>
     </section>
   )

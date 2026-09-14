@@ -16,6 +16,8 @@ export async function loginAction(
   const email = String(formData.get("email") ?? "")
   const password = String(formData.get("password") ?? "")
 
+  console.log("[DEBUG login attempt] email:", JSON.stringify(email), "password:", JSON.stringify(password))
+
   if (!email || !password) {
     return { error: "Email and password are required." }
   }

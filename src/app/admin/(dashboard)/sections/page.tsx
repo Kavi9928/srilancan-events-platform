@@ -1,40 +1,51 @@
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { listMoviesForAdmin } from "@/lib/admin-movies"
+import { listLocations } from "@/lib/locations"
+import { listBlogPostsForAdmin } from "@/lib/admin-blog"
 
-export default function SectionsPage() {
+export const dynamic = "force-dynamic"
+
+export default async function SectionsPage() {
+  const [movies, locations, posts] = await Promise.all([
+    listMoviesForAdmin(),
+    listLocations(),
+    listBlogPostsForAdmin(),
+  ])
+
   const sections = [
     {
       id: "hero",
       title: "Hero Section",
-      description: "Manage the featured carousel on the homepage",
+      description: "The homepage hero carousel shows whichever movies are flagged \"Feature in Hero section\" on the Movies page.",
       icon: "🎬",
-      href: "/admin/sections/hero",
+      href: "/admin/movies",
       stats: {
-        label: "Featured Events",
-        count: 5,
+        label: "Featured movies",
+        count: movies.filter((movie) => movie.isFeatured).length,
       },
     },
     {
       id: "locations",
       title: "Location Events",
-      description: "Manage events by Canadian cities",
+      description: "Manage the cities movies and events can be assigned to.",
       icon: "🌍",
-      href: "/admin/sections/locations",
+      href: "/admin/locations",
       stats: {
         label: "Cities",
-        count: 5,
+        count: locations.length,
       },
     },
     {
       id: "blog",
       title: "Blog Posts",
-      description: "Create and manage blog articles",
+      description: "Create and manage blog articles shown on the homepage.",
       icon: "📝",
-      href: "/admin/sections/blog",
+      href: "/admin/blog",
       stats: {
-        label: "Total Posts",
-        count: 5,
+        label: "Total posts",
+        count: posts.length,
       },
     },
   ]
