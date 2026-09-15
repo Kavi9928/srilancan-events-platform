@@ -16,6 +16,24 @@ export const movieFormSchema = z.object({
         .filter(Boolean)
     )
     .refine((genres) => genres.length > 0, "Add at least one genre"),
+  languages: z
+    .string()
+    .optional()
+    .transform((value) =>
+      (value ?? "")
+        .split(",")
+        .map((language) => language.trim())
+        .filter(Boolean)
+    ),
+  formats: z
+    .string()
+    .optional()
+    .transform((value) =>
+      (value ?? "")
+        .split(",")
+        .map((format) => format.trim())
+        .filter(Boolean)
+    ),
   durationMinutes: z.coerce.number().int().positive("Must be a positive number"),
   releaseDate: z.coerce.date(),
   ticketUrl: z.union([z.literal(""), z.string().url()]).optional(),
@@ -26,6 +44,7 @@ export const movieFormSchema = z.object({
   locationId: z.string().optional(),
   isFeatured: z.literal("on").optional(),
   archived: z.literal("on").optional(),
+  draft: z.literal("on").optional(),
 })
 
 export type MovieFormValues = z.infer<typeof movieFormSchema>

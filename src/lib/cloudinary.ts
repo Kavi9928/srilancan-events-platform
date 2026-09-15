@@ -18,9 +18,11 @@ const HAS_CLOUDINARY_CREDENTIALS =
   (process.env.CLOUDINARY_API_KEY?.length ?? 0) > 4 &&
   (process.env.CLOUDINARY_API_SECRET?.length ?? 0) > 4
 
+export type UploadFolder = "posters" | "banners" | "blog" | "team"
+
 async function uploadToLocalDisk(
   file: File,
-  folder: "posters" | "banners" | "blog"
+  folder: UploadFolder
 ): Promise<{ secureUrl: string; publicId: string }> {
   const buffer = Buffer.from(await file.arrayBuffer())
   const extension = path.extname(file.name) || ".jpg"
@@ -35,7 +37,7 @@ async function uploadToLocalDisk(
 
 function uploadToCloudinary(
   file: File,
-  folder: "posters" | "banners" | "blog"
+  folder: UploadFolder
 ): Promise<{ secureUrl: string; publicId: string }> {
   return file.arrayBuffer().then(
     (arrayBuffer) =>
@@ -57,7 +59,7 @@ function uploadToCloudinary(
 
 export async function uploadImage(
   file: File,
-  folder: "posters" | "banners" | "blog"
+  folder: UploadFolder
 ): Promise<{ secureUrl: string; publicId: string }> {
   if (!HAS_CLOUDINARY_CREDENTIALS) {
     return uploadToLocalDisk(file, folder)

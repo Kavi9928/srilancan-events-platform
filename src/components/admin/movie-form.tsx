@@ -90,6 +90,32 @@ export function MovieForm({
           </FieldContent>
         </Field>
 
+        <Field>
+          <FieldLabel htmlFor="languages">Languages (optional)</FieldLabel>
+          <FieldContent>
+            <Input
+              id="languages"
+              name="languages"
+              placeholder="Tamil, Sinhala"
+              defaultValue={movie?.languages.join(", ")}
+            />
+            <FieldError errors={fieldErrors.languages?.map((message) => ({ message }))} />
+          </FieldContent>
+        </Field>
+
+        <Field>
+          <FieldLabel htmlFor="formats">Formats (optional)</FieldLabel>
+          <FieldContent>
+            <Input
+              id="formats"
+              name="formats"
+              placeholder="2D, IMAX"
+              defaultValue={movie?.formats.join(", ")}
+            />
+            <FieldError errors={fieldErrors.formats?.map((message) => ({ message }))} />
+          </FieldContent>
+        </Field>
+
         <Field orientation="responsive">
           <FieldLabel htmlFor="durationMinutes">Duration (minutes)</FieldLabel>
           <FieldContent>
@@ -172,6 +198,19 @@ export function MovieForm({
           />
           <FieldLabel htmlFor="isFeatured" className="font-normal">
             Feature in Hero section
+          </FieldLabel>
+        </Field>
+
+        <Field orientation="horizontal">
+          <input
+            id="draft"
+            name="draft"
+            type="checkbox"
+            defaultChecked={movie?.status === "DRAFT"}
+            className="size-4 rounded border-input"
+          />
+          <FieldLabel htmlFor="draft" className="font-normal">
+            Save as draft (hidden from the site until you publish it)
           </FieldLabel>
         </Field>
 

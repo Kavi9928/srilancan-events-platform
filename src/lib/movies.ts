@@ -5,6 +5,9 @@ import type {
   Screening as PrismaScreening,
 } from "@/generated/prisma/client"
 
+/** Archived and Draft movies are never visible on the public site. */
+const PUBLIC_STATUS_FILTER: { notIn: MovieStatus[] } = { notIn: ["ARCHIVED", "DRAFT"] }
+
 function serializeMovie(movie: PrismaMovie): Movie {
   return {
     ...movie,
@@ -25,7 +28,7 @@ function serializeScreening(screening: PrismaScreening): Screening {
 
 export async function getNowShowingMovies(): Promise<Movie[]> {
   const movies = await prisma.movie.findMany({
-    where: { status: { not: "ARCHIVED" }, releaseDate: { lte: new Date() } },
+    where: { status: PUBLIC_STATUS_FILTER, releaseDate: { lte: new Date() } },
     orderBy: { releaseDate: "desc" },
   })
   return movies.map(serializeMovie)
@@ -33,7 +36,7 @@ export async function getNowShowingMovies(): Promise<Movie[]> {
 
 export async function getFeaturedMovies(limit = 3): Promise<Movie[]> {
   const movies = await prisma.movie.findMany({
-    where: { isFeatured: true, status: { not: "ARCHIVED" } },
+    where: { isFeatured: true, status: PUBLIC_STATUS_FILTER },
     orderBy: { updatedAt: "desc" },
     take: limit,
   })
@@ -42,7 +45,7 @@ export async function getFeaturedMovies(limit = 3): Promise<Movie[]> {
 
 export async function getComingSoonMovies(): Promise<Movie[]> {
   const movies = await prisma.movie.findMany({
-    where: { status: { not: "ARCHIVED" }, releaseDate: { gt: new Date() } },
+    where: { status: PUBLIC_STATUS_FILTER, releaseDate: { gt: new Date() } },
     orderBy: { releaseDate: "asc" },
   })
   return movies.map(serializeMovie)
@@ -50,38 +53,42 @@ export async function getComingSoonMovies(): Promise<Movie[]> {
 
 export async function getPublishedMovies(): Promise<Movie[]> {
   const movies = await prisma.movie.findMany({
-    where: { status: { not: "ARCHIVED" } },
+    where: { status: PUBLIC_STATUS_FILTER },
     orderBy: { releaseDate: "desc" },
   })
   return movies.map(serializeMovie)
 }
 
 export async function getMovieBySlug(slug: string): Promise<Movie | null> {
-  const movie = await prisma.movie.findUnique({ where: { slug } })
+  const movie = await prisma.movie.findFirst({ where: { slug, status: { not: "DRAFT" } } })
   return movie ? serializeMovie(movie) : null
 }
 
 export async function searchMovies(params: {
   query?: string
-  genre?: string
+  genres?: string[]
+  languages?: string[]
+  formats?: string[]
   status?: MovieStatus
 }): Promise<Movie[]> {
-  const { query, genre, status } = params
+  const { query, genres, languages, formats, status } = params
 
   const now = new Date()
   const statusFilter =
     status === "NOW_SHOWING"
-      ? { status: { not: "ARCHIVED" as const }, releaseDate: { lte: now } }
+      ? { status: PUBLIC_STATUS_FILTER, releaseDate: { lte: now } }
       : status === "COMING_SOON"
-        ? { status: { not: "ARCHIVED" as const }, releaseDate: { gt: now } }
+        ? { status: PUBLIC_STATUS_FILTER, releaseDate: { gt: now } }
         : status === "ARCHIVED"
           ? { status: "ARCHIVED" as const }
-          : { status: { not: "ARCHIVED" as const } }
+          : { status: PUBLIC_STATUS_FILTER }
 
   const movies = await prisma.movie.findMany({
     where: {
       ...statusFilter,
-      ...(genre ? { genres: { has: genre } } : {}),
+      ...(genres && genres.length > 0 ? { genres: { hasSome: genres } } : {}),
+      ...(languages && languages.length > 0 ? { languages: { hasSome: languages } } : {}),
+      ...(formats && formats.length > 0 ? { formats: { hasSome: formats } } : {}),
       ...(query
         ? {
             OR: [
@@ -108,7 +115,7 @@ export async function getRelatedMovies(
     where: {
       id: { not: currentMovieId },
       genres: { hasSome: genres },
-      status: { not: "ARCHIVED" },
+      status: PUBLIC_STATUS_FILTER,
     },
     orderBy: { releaseDate: "desc" },
     take: limit,
@@ -119,11 +126,27 @@ export async function getRelatedMovies(
 
 export async function getDistinctGenres(): Promise<string[]> {
   const movies = await prisma.movie.findMany({
-    where: { status: { not: "ARCHIVED" } },
+    where: { status: PUBLIC_STATUS_FILTER },
     select: { genres: true },
   })
   const genres = new Set(movies.flatMap((movie) => movie.genres))
   return [...genres].sort()
+}
+
+export async function getDistinctFilterOptions(): Promise<{
+  genres: string[]
+  languages: string[]
+  formats: string[]
+}> {
+  const movies = await prisma.movie.findMany({
+    where: { status: PUBLIC_STATUS_FILTER },
+    select: { genres: true, languages: true, formats: true },
+  })
+  return {
+    genres: [...new Set(movies.flatMap((movie) => movie.genres))].sort(),
+    languages: [...new Set(movies.flatMap((movie) => movie.languages))].sort(),
+    formats: [...new Set(movies.flatMap((movie) => movie.formats))].sort(),
+  }
 }
 
 export async function getMovieScreenings(movieId: string): Promise<Screening[]> {

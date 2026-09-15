@@ -1,5 +1,12 @@
 import type { MovieStatus } from "@/lib/types"
 
+export const statusLabel: Record<MovieStatus, string> = {
+  NOW_SHOWING: "Now Showing",
+  COMING_SOON: "Coming Soon",
+  ARCHIVED: "Archived",
+  DRAFT: "Draft",
+}
+
 /**
  * Now Showing vs Coming Soon is never picked manually — it's derived from releaseDate.
  * Compared at UTC calendar-day granularity (not exact instant) since releaseDate only
@@ -14,10 +21,10 @@ export function deriveShowingStatus(releaseDate: Date | string): "NOW_SHOWING" |
   return releaseDay <= todayDay ? "NOW_SHOWING" : "COMING_SOON"
 }
 
-/** Archived is the only status an admin sets manually; everything else is date-derived. */
+/** Archived and Draft are the only statuses an admin sets manually; everything else is date-derived. */
 export function computeEffectiveStatus(
   status: MovieStatus,
   releaseDate: Date | string
 ): MovieStatus {
-  return status === "ARCHIVED" ? "ARCHIVED" : deriveShowingStatus(releaseDate)
+  return status === "ARCHIVED" || status === "DRAFT" ? status : deriveShowingStatus(releaseDate)
 }

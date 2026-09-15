@@ -12,6 +12,8 @@ export const placeholderMovies: Movie[] = [
     description:
       "A sweeping drama that follows three generations of a family navigating change, distance, and the pull of home.",
     genres: ["Drama", "Family"],
+    languages: ["English"],
+    formats: ["2D"],
     posterUrl: "https://picsum.photos/seed/long-horizon/600/900",
     bannerUrl: "https://picsum.photos/seed/long-horizon/1600/700",
     trailerUrl: "https://www.youtube.com/watch?v=placeholder1",
@@ -32,6 +34,8 @@ export const placeholderMovies: Movie[] = [
     description:
       "A heartwarming comedy about a festival that brings an entire neighborhood together for one unforgettable night.",
     genres: ["Comedy"],
+    languages: ["English"],
+    formats: ["2D"],
     posterUrl: "https://picsum.photos/seed/paper-lanterns/600/900",
     bannerUrl: "https://picsum.photos/seed/paper-lanterns/1600/700",
     trailerUrl: null,
@@ -52,6 +56,8 @@ export const placeholderMovies: Movie[] = [
     description:
       "A high-stakes thriller set across one night in the city, where every choice narrows the odds of getting out.",
     genres: ["Thriller", "Action"],
+    languages: ["English", "Tamil"],
+    formats: ["2D", "IMAX"],
     posterUrl: "https://picsum.photos/seed/midnight-circuit/600/900",
     bannerUrl: "https://picsum.photos/seed/midnight-circuit/1600/700",
     trailerUrl: "https://www.youtube.com/watch?v=placeholder2",
@@ -72,6 +78,8 @@ export const placeholderMovies: Movie[] = [
     description:
       "A documentary-style journey along the coast, telling the stories of the people who call it home.",
     genres: ["Documentary"],
+    languages: ["Sinhala"],
+    formats: ["2D"],
     posterUrl: "https://picsum.photos/seed/salt-ceylon/600/900",
     bannerUrl: "https://picsum.photos/seed/salt-ceylon/1600/700",
     trailerUrl: null,

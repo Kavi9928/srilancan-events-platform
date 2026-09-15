@@ -22,6 +22,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "res.cloudinary.com",
       },
+      {
+        // Placeholder team portraits — safe to drop once real photos are uploaded.
+        protocol: "https",
+        hostname: "i.pravatar.cc",
+      },
     ],
   },
   experimental: {

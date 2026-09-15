@@ -7,3 +7,7 @@ export async function subscribeEmail(email: string): Promise<void> {
     update: {},
   })
 }
+
+export async function getNewsletterSubscriberCount(): Promise<number> {
+  return prisma.newsletterSubscriber.count()
+}

@@ -21,15 +21,13 @@ import {
 import { formatReleaseDate } from "@/lib/format"
 import { listMoviesForAdmin } from "@/lib/admin-movies"
 import { listLocations } from "@/lib/locations"
-import { deleteMovieAction, archiveMovieAction, restoreMovieAction } from "@/app/admin/movies/actions"
-import { computeEffectiveStatus } from "@/lib/movie-status"
-import type { MovieStatus } from "@/lib/types"
-
-const statusLabel: Record<MovieStatus, string> = {
-  NOW_SHOWING: "Now Showing",
-  COMING_SOON: "Coming Soon",
-  ARCHIVED: "Archived",
-}
+import {
+  deleteMovieAction,
+  archiveMovieAction,
+  draftMovieAction,
+  restoreMovieAction,
+} from "@/app/admin/movies/actions"
+import { computeEffectiveStatus, statusLabel } from "@/lib/movie-status"
 
 export const dynamic = "force-dynamic"
 
@@ -91,14 +89,23 @@ export default async function AdminMoviesPage() {
                       Edit
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    {movie.status === "ARCHIVED" ? (
+                    {movie.status === "DRAFT" ? (
+                      <DropdownMenuItem onClick={restoreMovieAction.bind(null, movie.id)}>
+                        Publish
+                      </DropdownMenuItem>
+                    ) : movie.status === "ARCHIVED" ? (
                       <DropdownMenuItem onClick={restoreMovieAction.bind(null, movie.id)}>
                         Restore (un-archive)
                       </DropdownMenuItem>
                     ) : (
-                      <DropdownMenuItem onClick={archiveMovieAction.bind(null, movie.id)}>
-                        Archive
-                      </DropdownMenuItem>
+                      <>
+                        <DropdownMenuItem onClick={draftMovieAction.bind(null, movie.id)}>
+                          Save as Draft
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={archiveMovieAction.bind(null, movie.id)}>
+                          Archive
+                        </DropdownMenuItem>
+                      </>
                     )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem

@@ -60,3 +60,16 @@ export async function updateBlogPostRecord(id: string, data: BlogPostInput): Pro
 export async function deleteBlogPostRecord(id: string): Promise<void> {
   await prisma.blogPost.delete({ where: { id } })
 }
+
+export async function getBlogStatsForAdmin(): Promise<{
+  published: number
+  draft: number
+  featured: number
+}> {
+  const [published, draft, featured] = await Promise.all([
+    prisma.blogPost.count({ where: { isPublished: true } }),
+    prisma.blogPost.count({ where: { isPublished: false } }),
+    prisma.blogPost.count({ where: { isFeatured: true } }),
+  ])
+  return { published, draft, featured }
+}

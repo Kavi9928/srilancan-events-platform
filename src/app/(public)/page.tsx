@@ -11,6 +11,7 @@ import {
   getNowShowingMovies,
   getComingSoonMovies,
   getDistinctGenres,
+  getDistinctFilterOptions,
 } from "@/lib/movies"
 import { listLocations } from "@/lib/locations"
 import { getPublishedBlogPosts } from "@/lib/blog"
@@ -19,7 +20,7 @@ import { getSiteStats } from "@/lib/site-stats"
 export const dynamic = "force-dynamic"
 
 export default async function HomePage() {
-  const [featuredMovies, nowShowing, comingSoon, locations, blogPosts, genres, stats] =
+  const [featuredMovies, nowShowing, comingSoon, locations, blogPosts, genres, stats, filterOptions] =
     await Promise.all([
       getFeaturedMovies(),
       getNowShowingMovies(),
@@ -28,6 +29,7 @@ export default async function HomePage() {
       getPublishedBlogPosts(5),
       getDistinctGenres(),
       getSiteStats(),
+      getDistinctFilterOptions(),
     ])
 
   return (
@@ -42,7 +44,14 @@ export default async function HomePage() {
       <StatsSection stats={stats} />
 
       {/* Events Filter Section */}
-      <EventsFilter locations={locations} nowShowing={nowShowing} comingSoon={comingSoon} />
+      <EventsFilter
+        locations={locations}
+        nowShowing={nowShowing}
+        comingSoon={comingSoon}
+        genres={filterOptions.genres}
+        languages={filterOptions.languages}
+        formats={filterOptions.formats}
+      />
 
       {/* Coming Up Next Spotlight */}
       <ComingUpNext movie={comingSoon[0] ?? null} />

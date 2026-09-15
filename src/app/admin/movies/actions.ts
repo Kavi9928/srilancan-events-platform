@@ -10,6 +10,7 @@ import {
   deleteMovieRecord,
   updateMovieRecord,
   archiveMovieRecord,
+  draftMovieRecord,
   restoreMovieRecord,
   addScreeningRecord,
   removeScreeningRecord,
@@ -69,7 +70,8 @@ export async function createMovieAction(
     return { error: "A poster and banner image are both required." }
   }
 
-  const { ticketUrl, trailerUrl, rating, locationId, isFeatured, archived, ...rest } = parsed.data
+  const { ticketUrl, trailerUrl, rating, locationId, isFeatured, archived, draft, ...rest } =
+    parsed.data
 
   try {
     await createMovieRecord({
@@ -79,7 +81,12 @@ export async function createMovieAction(
       rating: rating === "" || rating === undefined ? null : rating,
       locationId: emptyToNull(locationId),
       isFeatured: isFeatured === "on",
-      status: archived === "on" ? "ARCHIVED" : deriveShowingStatus(rest.releaseDate),
+      status:
+        archived === "on"
+          ? "ARCHIVED"
+          : draft === "on"
+            ? "DRAFT"
+            : deriveShowingStatus(rest.releaseDate),
       posterUrl,
       bannerUrl,
     })
@@ -114,7 +121,8 @@ export async function updateMovieAction(
   const currentPosterUrl = String(formData.get("currentPosterUrl") ?? "")
   const currentBannerUrl = String(formData.get("currentBannerUrl") ?? "")
 
-  const { ticketUrl, trailerUrl, rating, locationId, isFeatured, archived, ...rest } = parsed.data
+  const { ticketUrl, trailerUrl, rating, locationId, isFeatured, archived, draft, ...rest } =
+    parsed.data
 
   try {
     await updateMovieRecord(id, {
@@ -124,7 +132,12 @@ export async function updateMovieAction(
       rating: rating === "" || rating === undefined ? null : rating,
       locationId: emptyToNull(locationId),
       isFeatured: isFeatured === "on",
-      status: archived === "on" ? "ARCHIVED" : deriveShowingStatus(rest.releaseDate),
+      status:
+        archived === "on"
+          ? "ARCHIVED"
+          : draft === "on"
+            ? "DRAFT"
+            : deriveShowingStatus(rest.releaseDate),
       posterUrl: uploadedPosterUrl ?? currentPosterUrl,
       bannerUrl: uploadedBannerUrl ?? currentBannerUrl,
     })
@@ -148,6 +161,12 @@ export async function deleteMovieAction(id: string): Promise<void> {
 export async function archiveMovieAction(id: string): Promise<void> {
   await requireAdminSession()
   await archiveMovieRecord(id)
+  revalidateSite()
+}
+
+export async function draftMovieAction(id: string): Promise<void> {
+  await requireAdminSession()
+  await draftMovieRecord(id)
   revalidateSite()
 }
 

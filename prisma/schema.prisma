@@ -18,6 +18,7 @@ enum MovieStatus {
   NOW_SHOWING
   COMING_SOON
   ARCHIVED
+  DRAFT
 }
 
 model Movie {
@@ -26,6 +27,8 @@ model Movie {
   slug            String      @unique
   description     String
   genres          String[]
+  languages       String[]
+  formats         String[]
   posterUrl       String
   bannerUrl       String
   trailerUrl      String?
@@ -77,6 +80,48 @@ model NewsletterSubscriber {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   email     String   @unique
   createdAt DateTime @default(now())
+}
+
+model TeamMember {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  role      String
+  imageUrl  String
+  bio       String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sortOrder])
+}
+
+/// Singleton — the editable copy on the public About page. At most one row.
+model AboutContent {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  storyTitle    String
+  storyBody     String
+  quote         String?
+  quoteAuthor   String?
+  visionTitle   String
+  visionBody    String
+  missionTitle  String
+  missionPoints String[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model ContactInquiry {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String
+  subject   String?
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isRead])
+  @@index([createdAt])
 }
 
 model Screening {

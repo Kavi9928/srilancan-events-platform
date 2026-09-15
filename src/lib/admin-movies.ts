@@ -7,6 +7,8 @@ type MovieInput = {
   slug: string
   description: string
   genres: string[]
+  languages: string[]
+  formats: string[]
   durationMinutes: number
   releaseDate: Date
   status: MovieStatus
@@ -31,6 +33,8 @@ function serializeMovie(movie: {
   slug: string
   description: string
   genres: string[]
+  languages: string[]
+  formats: string[]
   posterUrl: string
   bannerUrl: string
   trailerUrl: string | null
@@ -110,6 +114,11 @@ export async function archiveMovieRecord(id: string): Promise<Movie> {
   return serializeMovie(movie)
 }
 
+export async function draftMovieRecord(id: string): Promise<Movie> {
+  const movie = await prisma.movie.update({ where: { id }, data: { status: "DRAFT" } })
+  return serializeMovie(movie)
+}
+
 export async function restoreMovieRecord(id: string): Promise<Movie> {
   const existing = await prisma.movie.findUniqueOrThrow({ where: { id } })
   const movie = await prisma.movie.update({
@@ -129,4 +138,21 @@ export async function addScreeningRecord(
 
 export async function removeScreeningRecord(screeningId: string): Promise<void> {
   await prisma.screening.delete({ where: { id: screeningId } })
+}
+
+export async function getUpcomingScreeningsForAdmin(
+  limit = 5
+): Promise<Array<Screening & { movieTitle: string; movieSlug: string }>> {
+  const screenings = await prisma.screening.findMany({
+    where: { startTime: { gte: new Date() } },
+    orderBy: { startTime: "asc" },
+    take: limit,
+    include: { movie: { select: { title: true, slug: true } } },
+  })
+
+  return screenings.map(({ movie, ...screening }) => ({
+    ...serializeScreening(screening),
+    movieTitle: movie.title,
+    movieSlug: movie.slug,
+  }))
 }

@@ -15,6 +15,10 @@ export async function listLocations(): Promise<Location[]> {
   return locations.map(serializeLocation)
 }
 
+export async function getLocationCount(): Promise<number> {
+  return prisma.location.count()
+}
+
 export async function getLocation(id: string): Promise<Location | null> {
   const location = await prisma.location.findUnique({ where: { id } })
   return location ? serializeLocation(location) : null

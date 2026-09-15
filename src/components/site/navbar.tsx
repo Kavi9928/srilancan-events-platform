@@ -7,8 +7,6 @@ import { MenuIcon, XIcon, Sparkles } from "lucide-react"
 import { useState, useEffect } from "react"
 
 const NAV_LINKS = [
-  { label: "Now Showing", href: "/now-showing" },
-  { label: "Coming Soon", href: "/coming-soon" },
   { label: "All Movies", href: "/movies" },
   { label: "Blog", href: "/blog" },
   { label: "About", href: "/about" },

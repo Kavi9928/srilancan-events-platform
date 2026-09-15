@@ -2,7 +2,15 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboardIcon, ClapperboardIcon, MapPinIcon, NewspaperIcon } from "lucide-react"
+import {
+  LayoutDashboardIcon,
+  ClapperboardIcon,
+  MapPinIcon,
+  NewspaperIcon,
+  MailIcon,
+  FileTextIcon,
+  UsersIcon,
+} from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -11,6 +19,9 @@ const adminLinks = [
   { href: "/admin/movies", label: "Movies", icon: ClapperboardIcon },
   { href: "/admin/locations", label: "Locations", icon: MapPinIcon },
   { href: "/admin/blog", label: "Blog", icon: NewspaperIcon },
+  { href: "/admin/about", label: "About Page", icon: FileTextIcon },
+  { href: "/admin/team", label: "Team", icon: UsersIcon },
+  { href: "/admin/contact", label: "Inquiries", icon: MailIcon },
 ]
 
 export function AdminNav() {

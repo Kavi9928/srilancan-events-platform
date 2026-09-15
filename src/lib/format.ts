@@ -13,6 +13,17 @@ export function formatReleaseDate(isoDate: string): string {
   })
 }
 
+export function formatDateTime(isoDate: string): string {
+  return new Date(isoDate).toLocaleString("en-CA", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: "UTC",
+  })
+}
+
 /** ~200 words/min reading speed; not stored, always derived from the current content. */
 export function estimateReadTime(content: string): string {
   const words = content.trim().split(/\s+/).filter(Boolean).length
