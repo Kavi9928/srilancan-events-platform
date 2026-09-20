@@ -24,7 +24,7 @@ const adminLinks = [
   { href: "/admin/contact", label: "Inquiries", icon: MailIcon },
 ]
 
-export function AdminNav() {
+export function AdminNav({ unreadInquiries = 0 }: { unreadInquiries?: number }) {
   const pathname = usePathname()
 
   return (
@@ -33,6 +33,9 @@ export function AdminNav() {
         const Icon = link.icon
         const isActive =
           link.href === "/admin" ? pathname === "/admin" : pathname.startsWith(link.href)
+        // Contact inquiries send no notification email, so the badge is the
+        // only signal that something new has come in.
+        const badge = link.href === "/admin/contact" ? unreadInquiries : 0
 
         return (
           <Link
@@ -45,6 +48,14 @@ export function AdminNav() {
           >
             <Icon className="size-4" />
             {link.label}
+            {badge > 0 ? (
+              <span
+                className="ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-xs font-semibold text-white tabular-nums"
+                aria-label={`${badge} unread ${badge === 1 ? "inquiry" : "inquiries"}`}
+              >
+                {badge > 99 ? "99+" : badge}
+              </span>
+            ) : null}
           </Link>
         )
       })}

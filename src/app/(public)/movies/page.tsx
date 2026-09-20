@@ -8,8 +8,12 @@ import { getDistinctFilterOptions, searchMovies } from "@/lib/movies"
 import type { MovieStatus } from "@/lib/types"
 
 export const metadata: Metadata = {
-  title: "All Movies",
-  description: "Browse all movies and events.",
+  title: "All Movies & Events",
+  description:
+    "Every Sri Lankan film screening, concert and cultural event SriLanCan Events is running in Toronto and across Canada. Filter by city, genre, language or format.",
+  // Filters are query params on this same page; without a canonical every
+  // combination is a crawlable duplicate.
+  alternates: { canonical: "/movies" },
 }
 
 type MoviesPageProps = {

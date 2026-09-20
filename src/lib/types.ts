@@ -49,7 +49,7 @@ export type BlogPost = {
 export type TeamMember = {
   id: string
   name: string
-  role: string
+  role: string | null
   imageUrl: string
   bio: string | null
   sortOrder: number

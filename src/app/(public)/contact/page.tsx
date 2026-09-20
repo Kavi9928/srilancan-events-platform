@@ -1,7 +1,6 @@
 import type { Metadata } from "next"
 import {
   MailIcon,
-  PhoneIcon,
   MapPinIcon,
   SparklesIcon,
   ExternalLinkIcon,
@@ -14,19 +13,14 @@ import { ScrollReveal } from "@/components/site/scroll-reveal"
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Get in touch with the Sri Lankan Events team.",
+  description:
+    "Get in touch with SriLanCan Events in Toronto about an event, a booking, or partnering with us.",
+  alternates: { canonical: "/contact" },
 }
 
 const MAPS_QUERY = "Toronto,Ontario,Canada"
 
 const CONTACT_METHODS = [
-  {
-    icon: PhoneIcon,
-    label: "Phone",
-    value: "+94 (0) 112-345-678",
-    href: "tel:+94112345678",
-    hint: "Mon–Fri, 9am – 6pm",
-  },
   {
     icon: MailIcon,
     label: "Email",

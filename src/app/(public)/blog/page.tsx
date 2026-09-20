@@ -10,7 +10,9 @@ export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
   title: "Blog",
-  description: "Event guides, tips, and stories from Sri Lankan Events.",
+  description:
+    "Event guides, artist features and stories from SriLanCan Events — Sri Lankan music and cinema in Canada.",
+  alternates: { canonical: "/blog" },
 }
 
 export default async function BlogIndexPage() {

@@ -1,6 +1,8 @@
 "use client"
 
-import { Share2, Send, Heart, Star, Zap } from "lucide-react"
+import { Star, Zap } from "lucide-react"
+
+import { SOCIAL_LINKS } from "@/lib/social-links"
 
 export function NavbarPrimary() {
   return (
@@ -21,51 +23,31 @@ export function NavbarPrimary() {
                 <span className="text-xs font-bold text-red-400 uppercase tracking-wider">Follow</span>
               </div>
               <div className="flex items-center gap-2">
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group p-2.5 rounded-lg bg-gradient-to-br from-red-500/20 to-red-600/10 hover:from-red-500/40 hover:to-red-600/20 text-red-400 hover:text-red-300 transition-all duration-300 hover:scale-110 border border-red-500/20 hover:border-red-500/50"
-                  aria-label="Share"
-                >
-                  <Share2 className="w-4 h-4" />
-                </a>
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group p-2.5 rounded-lg bg-gradient-to-br from-orange-500/20 to-orange-600/10 hover:from-orange-500/40 hover:to-orange-600/20 text-orange-400 hover:text-orange-300 transition-all duration-300 hover:scale-110 border border-orange-500/20 hover:border-orange-500/50"
-                  aria-label="Send"
-                >
-                  <Send className="w-4 h-4" />
-                </a>
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group p-2.5 rounded-lg bg-gradient-to-br from-rose-500/20 to-rose-600/10 hover:from-rose-500/40 hover:to-rose-600/20 text-rose-400 hover:text-rose-300 transition-all duration-300 hover:scale-110 border border-rose-500/20 hover:border-rose-500/50"
-                  aria-label="Like"
-                >
-                  <Heart className="w-4 h-4" />
-                </a>
+                {SOCIAL_LINKS.map((social) => (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group p-2.5 rounded-lg bg-gradient-to-br from-red-500/20 to-red-600/10 hover:from-red-500/40 hover:to-red-600/20 text-red-400 hover:text-red-300 transition-all duration-300 hover:scale-110 border border-red-500/20 hover:border-red-500/50"
+                    aria-label={social.label}
+                  >
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                      <path d={social.path} />
+                    </svg>
+                  </a>
+                ))}
               </div>
             </div>
 
             {/* Right - Contact Info */}
             <div className="flex items-center gap-2 sm:gap-4">
               <a
-                href="tel:+94112345678"
+                href="mailto:info@srilancanevents.ca"
                 className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white/80 hover:text-white transition-all duration-300 group text-xs font-medium"
               >
                 <Zap className="w-3.5 h-3.5 text-orange-400 group-hover:animate-pulse" />
-                <span className="hidden md:inline">+94 (0) 112-345-678</span>
-              </a>
-              <a
-                href="mailto:info@srilancanevents.ca"
-                className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white/80 hover:text-white transition-all duration-300 text-xs font-medium"
-              >
-                <span className="text-red-400">✉</span>
-                <span className="hidden lg:inline">info@srilancanevents.ca</span>
+                <span className="hidden md:inline">info@srilancanevents.ca</span>
               </a>
             </div>
           </div>

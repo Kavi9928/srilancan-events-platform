@@ -1,3 +1,5 @@
+import type { Metadata } from "next"
+
 import { EventsGalleryCarousel } from "@/components/site/events-gallery-carousel"
 import { GenreTicker } from "@/components/site/genre-ticker"
 import { StatsSection } from "@/components/site/stats-section"
@@ -18,6 +20,22 @@ import { getPublishedBlogPosts } from "@/lib/blog"
 import { getSiteStats } from "@/lib/site-stats"
 
 export const dynamic = "force-dynamic"
+
+// The homepage previously had no metadata of its own, so the most important
+// page on the site inherited the generic root-layout description.
+export const metadata: Metadata = {
+  title: "Sri Lankan Concerts & Film Premieres in Toronto",
+  description:
+    "SriLanCan Events brings Sri Lanka's biggest artists and latest films to Toronto and across Canada. Browse what's on and book tickets in seconds.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "SriLanCan Events | Sri Lankan Concerts & Films in Toronto",
+    description:
+      "Four years bringing the pulse of the island to the heart of North America. Concerts, film premieres and cultural celebrations across Canada.",
+    url: "/",
+    type: "website",
+  },
+}
 
 export default async function HomePage() {
   const [featuredMovies, nowShowing, comingSoon, locations, blogPosts, genres, stats, filterOptions] =

@@ -3,25 +3,24 @@ import type { AboutContent } from "@/lib/types"
 
 /** Shown until an admin saves their own copy — the About page is never blank. */
 export const DEFAULT_ABOUT_CONTENT: AboutContent = {
-  storyTitle: "Our story",
+  storyTitle: "Cultural curators, not just event organizers",
   storyBody: [
-    "It started with a familiar frustration — a Sri Lankan film was screening somewhere in the city, and nobody heard about it until the weekend was over. Word travelled through group chats, flyers, and luck.",
-    "We built Sri Lankan Events so that never has to happen again. One place where every screening, concert, and cultural night is listed properly, with real showtimes, real venues, and a ticket link that actually works.",
-    "Today we bring events to communities across Canada — and we are only getting started.",
+    "For the past four years, SriLanCan Events has served as the premier gateway for Sri Lankan art and culture in Toronto, Canada.",
+    "We are more than just event organizers; we are cultural curators dedicated to bringing the pulse of the island to the heart of North America.",
   ].join("\n"),
   quote:
-    "Culture doesn't travel on its own. Someone has to carry it — and then hand it to the next generation.",
-  quoteAuthor: "— The Sri Lankan Events team",
-  visionTitle: "To be the heartbeat of Sri Lankan culture in Canada.",
+    "The sounds, stories, and spirit of our homeland are never more than a ticket away.",
+  quoteAuthor: "— The SriLanCan Events team",
+  visionTitle: "To be the premier gateway for Sri Lankan art and culture in Canada.",
   visionBody:
-    "A future where no one in our community misses a moment that matters — where every film screening, every concert, and every celebration finds the people who have been waiting for it.",
+    "More than event organizers — cultural curators bringing the pulse of the island to the heart of North America, so that the community here never loses touch with the culture it came from.",
   missionTitle:
-    "Make every Sri Lankan event in Canada easy to find and effortless to attend.",
+    "Connect the Sri Lankan diaspora and the wider Canadian community with the finest entertainment Sri Lanka has to offer.",
   missionPoints: [
-    "Curate events that are genuinely worth your evening",
-    "Make booking a ticket take seconds, not a phone call",
-    "Cover every city where our community gathers",
-    "Give Sri Lankan artists a stage far from home",
+    "Bridge the distance between Colombo and Toronto",
+    "Keep the sounds, stories, and spirit of our homeland a ticket away",
+    "Bring Sri Lanka's iconic artists and rising stars to Canadian stages",
+    "Give Sri Lankan cinema a home on the big screen in Canada",
   ],
 }
 

@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge"
 import { ShareButtons } from "@/components/site/share-buttons"
 import { formatReleaseDate, estimateReadTime } from "@/lib/format"
 import { getBlogPostBySlug } from "@/lib/blog"
+import { JsonLd } from "@/components/site/json-ld"
+import { blogPostingSchema, breadcrumbSchema } from "@/lib/structured-data"
 
 type BlogPostPageProps = {
   params: Promise<{ slug: string }>
@@ -22,9 +24,14 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   return {
     title: post.title,
     description: post.excerpt,
+    alternates: { canonical: `/blog/${post.slug}` },
     openGraph: {
+      type: "article",
       title: post.title,
       description: post.excerpt,
+      url: `/blog/${post.slug}`,
+      publishedTime: new Date(post.publishedAt).toISOString(),
+      authors: [post.author],
       images: [{ url: post.imageUrl }],
     },
   }
@@ -40,6 +47,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   return (
     <div>
+      <JsonLd data={blogPostingSchema(post)} />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Blog", path: "/blog" },
+          { name: post.title, path: `/blog/${post.slug}` },
+        ])}
+      />
       <div className="relative aspect-[16/7] w-full overflow-hidden bg-muted">
         <Image
           src={post.imageUrl}

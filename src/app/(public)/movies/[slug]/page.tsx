@@ -9,7 +9,9 @@ import { ScreeningsList } from "@/components/site/screenings-list"
 import { RelatedMovies } from "@/components/site/related-movies"
 import { ShareButtons } from "@/components/site/share-buttons"
 import { formatDuration, formatReleaseDate } from "@/lib/format"
-import { getMovieBySlug } from "@/lib/movies"
+import { getMovieBySlug, getMovieScreenings } from "@/lib/movies"
+import { JsonLd } from "@/components/site/json-ld"
+import { breadcrumbSchema, movieEventSchema, movieSchema } from "@/lib/structured-data"
 import { getYoutubeEmbedUrl } from "@/lib/youtube"
 
 type MoviePageProps = {
@@ -29,9 +31,12 @@ export async function generateMetadata({
   return {
     title: movie.title,
     description: movie.description,
+    alternates: { canonical: `/movies/${movie.slug}` },
     openGraph: {
+      type: "video.movie",
       title: movie.title,
       description: movie.description,
+      url: `/movies/${movie.slug}`,
       images: [{ url: movie.bannerUrl }],
     },
   }
@@ -49,8 +54,22 @@ export default async function MoviePage({ params }: MoviePageProps) {
     ? getYoutubeEmbedUrl(movie.trailerUrl)
     : null
 
+  // ScreeningEvent markup needs a real start time, so it only appears once
+  // showtimes exist. The Movie schema is always valid, so it always ships.
+  const screenings = await getMovieScreenings(movie.id)
+  const eventSchema = movieEventSchema(movie, screenings)
+
   return (
     <div>
+      <JsonLd data={movieSchema(movie)} />
+      {eventSchema ? <JsonLd data={eventSchema} /> : null}
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "All Movies", path: "/movies" },
+          { name: movie.title, path: `/movies/${movie.slug}` },
+        ])}
+      />
       <div className="relative aspect-[16/7] w-full overflow-hidden bg-muted">
         <Image
           src={movie.bannerUrl}

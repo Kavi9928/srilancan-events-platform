@@ -17,6 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { DeleteAllTeamButton } from "@/components/admin/delete-all-team-button"
 import { listTeamMembers } from "@/lib/team"
 import { deleteTeamMemberAction } from "@/app/admin/team/actions"
 
@@ -34,9 +35,12 @@ export default async function AdminTeamPage() {
             Members shown in the Team section of the About page.
           </p>
         </div>
-        <Button nativeButton={false} render={<Link href="/admin/team/new" />}>
-          Add member
-        </Button>
+        <div className="flex items-center gap-2">
+          <DeleteAllTeamButton memberCount={members.length} />
+          <Button nativeButton={false} render={<Link href="/admin/team/new" />}>
+            Add member
+          </Button>
+        </div>
       </div>
 
       <Table>
@@ -68,7 +72,9 @@ export default async function AdminTeamPage() {
                   />
                 </TableCell>
                 <TableCell className="font-medium">{member.name}</TableCell>
-                <TableCell>{member.role}</TableCell>
+                <TableCell>
+                  {member.role ?? <span className="text-muted-foreground">—</span>}
+                </TableCell>
                 <TableCell>{member.sortOrder}</TableCell>
                 <TableCell>
                   <DropdownMenu>

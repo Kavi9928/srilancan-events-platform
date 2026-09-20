@@ -25,7 +25,7 @@ export async function getTeamMember(id: string): Promise<TeamMember | null> {
 
 export async function createTeamMemberRecord(data: {
   name: string
-  role: string
+  role: string | null
   imageUrl: string
   bio: string | null
   sortOrder: number
@@ -37,7 +37,7 @@ export async function updateTeamMemberRecord(
   id: string,
   data: {
     name: string
-    role: string
+    role: string | null
     imageUrl: string
     bio: string | null
     sortOrder: number
@@ -48,4 +48,10 @@ export async function updateTeamMemberRecord(
 
 export async function deleteTeamMemberRecord(id: string): Promise<void> {
   await prisma.teamMember.delete({ where: { id } })
+}
+
+/** Clears the whole team. Returns how many rows were removed. */
+export async function deleteAllTeamMemberRecords(): Promise<number> {
+  const { count } = await prisma.teamMember.deleteMany({})
+  return count
 }

@@ -9,12 +9,19 @@ import {
   createTeamMemberRecord,
   updateTeamMemberRecord,
   deleteTeamMemberRecord,
+  deleteAllTeamMemberRecords,
 } from "@/lib/team"
 import { teamMemberFormSchema } from "@/lib/validation/team"
 
 export type TeamMemberActionState = {
   error?: string
   fieldErrors?: Record<string, string[]>
+}
+
+export type TeamBulkActionState = {
+  error?: string
+  /** Set once the delete has run, so the dialog knows to close. */
+  deletedCount?: number
 }
 
 function revalidateTeam() {
@@ -52,8 +59,13 @@ export async function createTeamMemberAction(
     return { error: "A photo is required." }
   }
 
-  const { bio, ...rest } = parsed.data
-  await createTeamMemberRecord({ ...rest, bio: emptyToNull(bio), imageUrl })
+  const { bio, role, ...rest } = parsed.data
+  await createTeamMemberRecord({
+    ...rest,
+    role: emptyToNull(role),
+    bio: emptyToNull(bio),
+    imageUrl,
+  })
 
   revalidateTeam()
   redirect("/admin/team")
@@ -74,9 +86,10 @@ export async function updateTeamMemberAction(
   const uploadedImageUrl = await uploadIfProvided(formData)
   const currentImageUrl = String(formData.get("currentImageUrl") ?? "")
 
-  const { bio, ...rest } = parsed.data
+  const { bio, role, ...rest } = parsed.data
   await updateTeamMemberRecord(id, {
     ...rest,
+    role: emptyToNull(role),
     bio: emptyToNull(bio),
     imageUrl: uploadedImageUrl ?? currentImageUrl,
   })
@@ -89,4 +102,19 @@ export async function deleteTeamMemberAction(id: string): Promise<void> {
   await requireAdminSession()
   await deleteTeamMemberRecord(id)
   revalidateTeam()
+}
+
+export async function deleteAllTeamMembersAction(
+  _prevState: TeamBulkActionState,
+  _formData: FormData
+): Promise<TeamBulkActionState> {
+  await requireAdminSession()
+
+  try {
+    const deletedCount = await deleteAllTeamMemberRecords()
+    revalidateTeam()
+    return { deletedCount }
+  } catch {
+    return { error: "Could not delete the team. Please try again." }
+  }
 }

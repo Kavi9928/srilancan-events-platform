@@ -21,29 +21,38 @@ export function TeamSection({ members }: { members: TeamMember[] }) {
         {members.map((member, index) => (
           <ScrollReveal key={member.id} delay={index * 80} className="lg:even:mt-10">
             <div className="group h-full rounded-[1.75rem] bg-gradient-to-br from-red-500/40 via-white/10 to-transparent p-px transition-all duration-500 hover:from-red-500 hover:via-orange-400/60">
-              <div className="relative h-full overflow-hidden rounded-[1.75rem] bg-black">
-                {/* Portrait — desaturated until hover */}
-                <div className="relative aspect-4/5 overflow-hidden">
-                  <Image
-                    src={member.imageUrl}
-                    alt={member.name}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                    className="object-cover grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-                  <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-red-500/60 to-transparent" />
+              <div className="relative flex h-full flex-col rounded-[1.75rem] bg-black px-5 pt-7 pb-6 text-center">
+                {/* A circular mask rather than a full-bleed rectangle: it suits
+                    an ordinary head-and-shoulders photo, and it also crops away
+                    the flat backdrop on portraits that arrive as a circle
+                    already drawn on a light square. */}
+                <div className="relative mx-auto aspect-square w-full max-w-[10.5rem]">
+                  <div className="absolute -inset-1 rounded-full bg-gradient-to-br from-red-500/30 to-orange-500/10 opacity-0 blur-lg transition-opacity duration-500 group-hover:opacity-100" />
+                  <div className="relative h-full w-full overflow-hidden rounded-full ring-1 ring-white/10 transition-all duration-500 group-hover:ring-red-500/40">
+                    <Image
+                      src={member.imageUrl}
+                      alt={member.name}
+                      fill
+                      sizes="(max-width: 640px) 60vw, (max-width: 768px) 40vw, (max-width: 1024px) 25vw, 11rem"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
                 </div>
 
-                {/* Details overlapping the portrait */}
-                <div className="relative -mt-20 px-5 pb-6">
-                  <p className="bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-[0.65rem] leading-snug font-bold tracking-[0.12em] text-transparent uppercase">
-                    {member.role}
-                  </p>
-                  <h3 className="mt-1.5 text-lg leading-tight font-bold text-white">
+                <div className="mt-5">
+                  {member.role ? (
+                    <p className="bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-[0.65rem] leading-snug font-bold tracking-[0.12em] text-transparent uppercase">
+                      {member.role}
+                    </p>
+                  ) : null}
+                  <h3
+                    className={`text-lg leading-tight font-bold text-white ${
+                      member.role ? "mt-1.5" : ""
+                    }`}
+                  >
                     {member.name}
                   </h3>
-                  <span className="mt-2.5 block h-0.5 w-7 rounded-full bg-gradient-to-r from-red-500 to-orange-400 transition-all duration-500 group-hover:w-14" />
+                  <span className="mx-auto mt-2.5 block h-0.5 w-7 rounded-full bg-gradient-to-r from-red-500 to-orange-400 transition-all duration-500 group-hover:w-14" />
 
                   {member.bio ? (
                     <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-500 group-hover:grid-rows-[1fr]">

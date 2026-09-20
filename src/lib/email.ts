@@ -12,7 +12,10 @@ export async function sendContactInquiryEmail(inquiry: {
   subject: string | null
   message: string
 }): Promise<void> {
-  const to = process.env.ADMIN_EMAIL
+  // Kept separate from ADMIN_EMAIL, which is the admin *login* identity —
+  // the inbox that should receive enquiries is a different decision from
+  // who signs in. Falls back to ADMIN_EMAIL when unset.
+  const to = process.env.CONTACT_NOTIFICATION_EMAIL || process.env.ADMIN_EMAIL
   const from = process.env.RESEND_FROM_EMAIL
 
   if (!resend || !to || !from) {

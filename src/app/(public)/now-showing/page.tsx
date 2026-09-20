@@ -8,7 +8,9 @@ export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
   title: "Now Showing",
-  description: "Movies currently playing.",
+  description:
+    "Sri Lankan films and events playing right now in Toronto and across Canada. Check showtimes and book tickets.",
+  alternates: { canonical: "/now-showing" },
 }
 
 export default async function NowShowingPage() {

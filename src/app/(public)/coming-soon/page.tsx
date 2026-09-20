@@ -8,7 +8,9 @@ export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
   title: "Coming Soon",
-  description: "Movies coming soon.",
+  description:
+    "Upcoming Sri Lankan concerts and film premieres coming to Canada. See what is on the way and be first to book.",
+  alternates: { canonical: "/coming-soon" },
 }
 
 export default async function ComingSoonPage() {

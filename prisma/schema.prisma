@@ -85,7 +85,7 @@ model NewsletterSubscriber {
 model TeamMember {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
-  role      String
+  role      String?
   imageUrl  String
   bio       String?
   sortOrder Int      @default(0)

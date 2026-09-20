@@ -44,15 +44,17 @@ export function TeamMemberForm({
         </Field>
 
         <Field>
-          <FieldLabel htmlFor="role">Designation</FieldLabel>
+          <FieldLabel htmlFor="role">Designation (optional)</FieldLabel>
           <FieldContent>
             <Input
               id="role"
               name="role"
               placeholder="Founder & Creative Director"
-              defaultValue={member?.role}
-              required
+              defaultValue={member?.role ?? ""}
             />
+            <p className="text-xs text-muted-foreground">
+              Leave blank to show just the name on the About page.
+            </p>
             <FieldError errors={fieldErrors.role?.map((message) => ({ message }))} />
           </FieldContent>
         </Field>
