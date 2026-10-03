@@ -17,7 +17,7 @@ import {
 } from "@/lib/admin-movies"
 import { movieFormSchema, screeningFormSchema } from "@/lib/validation/movie"
 import { deriveShowingStatus } from "@/lib/movie-status"
-import { Prisma } from "@/generated/prisma/client"
+import { Prisma } from "@prisma/client"
 
 export type MovieActionState = {
   error?: string

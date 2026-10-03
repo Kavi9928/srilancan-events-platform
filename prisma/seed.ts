@@ -1,4 +1,4 @@
-import { PrismaClient } from "../src/generated/prisma/client"
+import { PrismaClient } from "@prisma/client"
 import { placeholderMovies } from "../src/lib/placeholder-movies"
 
 const prisma = new PrismaClient()

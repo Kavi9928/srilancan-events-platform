@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import type { TeamMember } from "@/lib/types"
-import type { TeamMember as PrismaTeamMember } from "@/generated/prisma/client"
+import type { TeamMember as PrismaTeamMember } from "@prisma/client"
 
 function serializeTeamMember(member: PrismaTeamMember): TeamMember {
   return {

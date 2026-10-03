@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import type { BlogPost } from "@/lib/types"
-import type { BlogPost as PrismaBlogPost } from "@/generated/prisma/client"
+import type { BlogPost as PrismaBlogPost } from "@prisma/client"
 
 function serializeBlogPost(post: PrismaBlogPost): BlogPost {
   return {

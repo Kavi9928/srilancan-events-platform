@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import type { Location } from "@/lib/types"
-import type { Location as PrismaLocation } from "@/generated/prisma/client"
+import type { Location as PrismaLocation } from "@prisma/client"
 
 function serializeLocation(location: PrismaLocation): Location {
   return {

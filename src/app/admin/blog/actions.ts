@@ -11,7 +11,7 @@ import {
   deleteBlogPostRecord,
 } from "@/lib/admin-blog"
 import { blogPostFormSchema } from "@/lib/validation/blog"
-import { Prisma } from "@/generated/prisma/client"
+import { Prisma } from "@prisma/client"
 
 export type BlogPostActionState = {
   error?: string

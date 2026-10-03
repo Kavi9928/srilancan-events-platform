@@ -15,7 +15,7 @@ import path from "node:path"
 
 import { v2 as cloudinary } from "cloudinary"
 
-import { PrismaClient } from "../src/generated/prisma/client"
+import { PrismaClient } from "@prisma/client"
 
 const prisma = new PrismaClient()
 

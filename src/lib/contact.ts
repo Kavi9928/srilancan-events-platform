@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import type { ContactInquiry } from "@/lib/types"
-import type { ContactInquiry as PrismaContactInquiry } from "@/generated/prisma/client"
+import type { ContactInquiry as PrismaContactInquiry } from "@prisma/client"
 
 function serializeInquiry(inquiry: PrismaContactInquiry): ContactInquiry {
   return {

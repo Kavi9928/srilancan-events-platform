@@ -3,7 +3,7 @@ import type { Movie, MovieStatus, Screening } from "@/lib/types"
 import type {
   Movie as PrismaMovie,
   Screening as PrismaScreening,
-} from "@/generated/prisma/client"
+} from "@prisma/client"
 
 /** Archived and Draft movies are never visible on the public site. */
 const PUBLIC_STATUS_FILTER: { notIn: MovieStatus[] } = { notIn: ["ARCHIVED", "DRAFT"] }
